@@ -37,6 +37,7 @@ final readonly class StoreUpload
     public function __invoke(UploadedFile $file, ?string $folder = null, array $metadata = []): MediaItemInterface
     {
         $this->validate($file);
+        $folder = $this->folder($folder);
 
         $path = $file->store($folder ?? 'media', $this->disk);
 
@@ -78,9 +79,25 @@ final readonly class StoreUpload
         }
     }
 
+    private function folder(?string $folder): ?string
+    {
+        if ($folder === null || trim($folder) === '') {
+            return null;
+        }
+        $folder = trim($folder);
+        if (preg_match('/[\x00-\x20]/', $folder) || str_contains($folder, '\\') || str_starts_with($folder, '/') || collect(explode('/', $folder))->contains('..')) {
+            throw InvalidUpload::corrupt();
+        }
+
+        return trim($folder, '/');
+    }
+
     private function mimeType(UploadedFile $file): string
     {
-        return $file->getMimeType() ?? $file->getClientMimeType();
+        // Never trust the client-supplied MIME claim when PHP cannot identify
+        // the file from its contents. An unknown type must fail the allow-list
+        // check rather than becoming an upload bypass.
+        return $file->getMimeType() ?? '';
     }
 
     /**
