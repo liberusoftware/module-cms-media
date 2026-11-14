@@ -11,7 +11,7 @@
     "illuminate/http": "^13.38.0",
     "illuminate/support": "^13.38.0"
   },
-  "name": "liberusoftware/module-cms-media-library",
+  "name": "liberusoftware/module-cms-media",
   "autoload-dev": {
     "psr-4": {
       "Liberu\\Cms\\Media\\Tests\\": "tests/"
@@ -21,7 +21,7 @@
   "prefer-stable": true,
   "extra": {
     "liberu": {
-      "name": "module-cms-media-library"
+      "name": "module-cms-media"
     },
     "laravel": {
       "providers": [
